@@ -1,3 +1,5 @@
+"""This module contains the codes for all supported board commands"""
+
 from enum import Enum
 
 class Command_Codes(Enum):

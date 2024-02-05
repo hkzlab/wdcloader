@@ -4,6 +4,8 @@ import argparse
 import logging
 from typing import Tuple, List
 
+import serial
+
 _PROG_NAME: str = 'wdcloader'
 _PROG_VERSION: Tuple[int, int] = (0, 0)
 
@@ -68,3 +70,18 @@ if __name__ == '__main__':
     args = _build_argsparser().parse_args()
 
     print(f'{args}')
+
+    ser_port: serial.Serial = None
+
+    try:
+        ser_port = serial.Serial(port = args.port,
+                                 bytesize = 8,
+                                 stopbits = 1,
+                                 parity = 'N',
+                                 rtscts = True,
+                                 timeout = 1.0)
+    finally:
+        if ser_port and not ser_port.closed:
+            ser_port.close();
+        print('Bye bye!')
+
