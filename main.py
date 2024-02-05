@@ -14,13 +14,18 @@ def _build_argsparser() -> argparse.ArgumentParser:
         prog=_PROG_NAME,
         description='A tool for uploading and executing programs on an SXB or MMC board.'
     )
-    mut_group = parser.add_mutually_exclusive_group(required=True) # Require at least one parameter from these
-    parser.add_argument('-p', '--port',
+    
+   
+    parser.add_argument('--version', action='version', version=f'%(prog)s {_PROG_VERSION[0]}.{_PROG_VERSION[1]}')
+
+    arg_group = parser.add_argument_group()
+    arg_group.add_argument('-v', '--verbose', action='count', default=0)
+    arg_group.add_argument('-p', '--port',
                         required=True,
                         type=str,
                         metavar="<serial port>",
                         help='Serial port associated with the board')
-    parser.add_argument('-v', '--verbose', action='count', default=0)
+    mut_group = arg_group.add_mutually_exclusive_group(required=True) # Require at least one parameter from these
 
     mut_group.add_argument('--tload',
                         help='Load an <S19/S28 file>',
@@ -56,7 +61,6 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         help='Exec terminal',
                         action='store_true',                 
                         required=False)
-    mut_group.add_argument('--version', action='version', version=f'%(prog)s {_PROG_VERSION[0]}.{_PROG_VERSION[1]}')
 
     return parser
 
