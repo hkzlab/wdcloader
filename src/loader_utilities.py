@@ -121,6 +121,13 @@ class LoaderUtilities:
             file.close()
 
     def save_records(address:int, data: bytes, filename: str) -> None:
+        """Save binary data to a file in SREC format
+
+        Args:
+            address (int): Source address of the data
+            data (bytes): data to be saved
+            filename (str): path to destination file
+        """        
         file = open(filename, 'w')
         try:
             data_len = len(data)
