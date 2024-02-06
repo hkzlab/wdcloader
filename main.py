@@ -60,6 +60,12 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         type=str,
                         metavar='<WDC file>',
                         required=False)
+    mut_group.add_argument('--loadraw',
+                        help='Load from <raw file> and store at <hex_address>',
+                        nargs=2,
+                        type=str,
+                        metavar=('<hex_address>', '<raw file>'),
+                        required=False)
     mut_group.add_argument('--exec',
                         help='Exec code at <hex_address>',
                         nargs='+',
@@ -102,11 +108,19 @@ if __name__ == '__main__':
                 raise RuntimeError('Unknown board detected!')
 
             if args.load:
-                print(f'Loading SREC file {args.load} ...')
-                LoaderUtilities.load_records(ser_port, args.load)
+                params = args.load
+                print(f'Loading SREC file {params[0]} ...')
+                LoaderUtilities.load_records(ser_port, params[0])
             elif args.loadbin:
-                print(f'Loading WDC file {args.loadbin} ...')
-                LoaderUtilities.load_binary(ser_port, args.loadbin)
+                params = args.loadbin
+                print(f'Loading WDC file {params[0]} ...')
+                LoaderUtilities.load_binary(ser_port, params[0])
+            elif args.loadraw:
+                params = args.loadraw
+                address = int(params[0], 16)
+                filename = params[1]
+                print(f'Loading raw file {filename} at address {'0x%.6X' % address} ...')
+                LoaderUtilities.load_raw_binary(ser_port, address, filename)
             elif args.show:
                 params = args.show
                 address = int(params[0], 16)

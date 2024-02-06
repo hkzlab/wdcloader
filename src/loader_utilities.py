@@ -35,12 +35,14 @@ class LoaderUtilities:
                 if line.startswith('S1'): # 16 bit address record
                     count = int(line[2:4], 16) - 3
                     address = int(line[4:8], 16)
+                    print(f'Loading S1 record of size {count} at address {'0x%.4X' % address} ...')
                     data = bytearray.fromhex(line[8:(count*2)+8])
                     # Ignore the checksum for now
                     BoardCommands.write_memory(ser, address, data)
                 elif line.startswith('S2'): # 24 bit address record
                     count = int(line[2:4], 16) - 4
                     address = int(line[4:10], 16)
+                    print(f'Loading S2 record of size {count} at address {'0x%.6X' % address} ...')
                     data = bytearray.fromhex(line[10:(count*2)+10])
                     # Ignore the checksum for now
                     BoardCommands.write_memory(ser, address, data)
@@ -84,10 +86,41 @@ class LoaderUtilities:
 
                 data = file.read(size)
                 if not data or len(data) != size: break
-
+                
+                print(f'Loading WDC binary record of size {size} at address {'0x%.6X' % address} ...')
                 BoardCommands.write_memory(ser, address, data)
 
                 total = total + size
+        finally:
+            file.close()
+
+        print(f'Loaded {total} bytes from {filename}.')
+
+    @staticmethod
+    def load_raw_binary(ser: serial.Serial, address: int, filename: str) -> None:
+        """Load data from 'filename' in raw binary format into the board's memory at specified address.
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+            address (int): address at which to load
+            filename (str): path to the file containing the data in raw binary format
+        """
+
+        address = address & 0xFFFFFF
+
+        file = open(filename, 'rb')
+        total: int = 0
+
+        try:
+            while True:
+                data = file.read(64)
+
+                if not data: break
+
+                BoardCommands.write_memory(ser, address, data)
+
+                address = address + len(data)
+                total = total + len(data)
         finally:
             file.close()
 
