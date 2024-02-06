@@ -10,7 +10,10 @@ import serial
 
 @final
 class BoardUtilities:
-    """This class collects utilty methods to interface with the boards"""
+    """
+    This class collects utilty methods to interface directly with the boards
+    or to extract information from data provided by the boards
+    """
 
     @staticmethod
     def reset_board(ser: serial.Serial) -> None:
@@ -85,7 +88,7 @@ class BoardUtilities:
 
 @final
 class BoardCommands:
-    """This class contains high level board commands"""
+    """This class contains higher level board commands"""
 
     @staticmethod
     def read_memory(ser: serial.Serial, address: int, size: int) -> bytes:
@@ -156,4 +159,3 @@ class BoardCommands:
                 ser.write(address.to_bytes(length=3, byteorder='little', signed=False))
             case _:
                 raise ValueError('Cannot execute memory on an unknown board!')
-
