@@ -104,16 +104,16 @@ if __name__ == '__main__':
             print(f'Detected board... {board_type.name}')
 
             if args.load:
-                print(f'Load SREC file {args.load}')
+                print(f'Loading SREC file {args.load}')
                 LoaderUtilities.load_records(ser_port, args.load)
             elif args.loadbin:
-                print(f'Load WDC file {args.loadbin}')
+                print(f'Loading WDC file {args.loadbin}')
                 LoaderUtilities.load_binary(ser_port, args.loadbin)
             elif args.show:
                 params = args.show
                 address = int(params[0], 16)
                 data_len = int(params[1])
-                print(f'Show {data_len} bytes at address {'%.6X' % address}')
+                print(f'Showing {data_len} bytes at address {'0x%.6X' % address}')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
                 LoaderUtilities.print_memory(address, data)
             elif args.save:
@@ -121,21 +121,21 @@ if __name__ == '__main__':
                 address = int(params[0], 16)
                 data_len = int(params[1])
                 filename = params[2]
-                print(f'Save {data_len} bytes from address {'%.6X' % address} in SREC file {filename}')
+                print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in SREC file {filename}')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
-                LoaderUtilities.save_records(address, data_len, filename)
+                LoaderUtilities.save_records(address, data, filename)
             elif args.savebin:
                 params = args.savebin
                 address = int(params[0], 16)
                 data_len = int(params[1])
                 filename = params[2]
-                print(f'Save {data_len} bytes from address {'%.6X' % address} in BINARY file {filename}')
+                print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in BINARY file {filename}')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
-                LoaderUtilities.save_binary(address, data_len, filename)
+                LoaderUtilities.save_binary(address, data, filename)
             elif args.exec:
                 params = args.exec
                 address = int(params[0], 16)
-                print(f'Execute at address {'%.6X' % address}')
+                print(f'Executing at address {'0x%.6X' % address}')
                 BoardCommands.execute_memory(ser_port, address, board_type)                        
 
         finally:

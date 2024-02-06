@@ -183,7 +183,7 @@ class BoardCommands:
         match b_type:
             case Board_Type.W65C02SXB | Board_Type.W65C816SXB:
                 address = address & 0xFFFF # Trucate the address to 2 bytes
-                data = bytes([0] * 16)
+                data = [0] * 16
                 # Register A is in -> data[0], data[1]
                 # Register B is in -> data[2], data[3]
                 # Register C is in -> data[4], data[5]
@@ -201,7 +201,7 @@ class BoardCommands:
                 # PBR seems (?) to be in data[14]
                 # DBR seems (?) to be in data[15]
 
-                cls.write_memory(ser, 0x7E00, data)
+                cls.write_memory(ser, 0x7E00, bytes(data))
                 BoardUtilities.send_command(ser, Command_Code.EXEC_DEBUG)
             case Board_Type.W65C165SXB_A | Board_Type.W65C165SXB_B | Board_Type.W65C165SXB_C:
                 address = address & 0xFFFFFF # Trucate the address to 3 bytes
