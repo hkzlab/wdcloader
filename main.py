@@ -1,7 +1,6 @@
 """Main module"""
 
 import argparse
-import logging
 from typing import Tuple, List
 
 import serial
@@ -13,8 +12,6 @@ from src.board_types import Board_Type
 _PROG_NAME: str = 'wdcloader'
 _PROG_VERSION: Tuple[int, int] = (0, 0)
 
-_LOGGER: logging.Logger
-
 def _build_argsparser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         prog=_PROG_NAME,
@@ -25,7 +22,6 @@ def _build_argsparser() -> argparse.ArgumentParser:
     parser.add_argument('--version', action='version', version=f'%(prog)s {_PROG_VERSION[0]}.{_PROG_VERSION[1]}')
 
     arg_group = parser.add_argument_group()
-    arg_group.add_argument('-v', '--verbose', action='count', default=0)
     arg_group.add_argument('-p', '--port',
                         required=True,
                         type=str,
