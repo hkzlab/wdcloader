@@ -34,7 +34,11 @@ class BoardUtilities:
 
     @staticmethod
     def detect_board(info_data: bytes) -> Board_Type:
-        raise NotImplementedError
+        if len(info_data) != 28:
+            raise ValueError('The info data block should be exactly 28 bytes!')
+
+        # TODO: Detection
+        return Board_Type.UNKNOWN
 
 @final
 class BoardCommands:
