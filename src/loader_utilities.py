@@ -37,3 +37,5 @@ class LoaderUtilities:
                 total = total + count
         finally:
             file.close()
+
+        print(f'Loaded {total} bytes from {filename}.')
