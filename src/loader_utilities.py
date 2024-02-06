@@ -1,6 +1,6 @@
 """This module contains utility code for the loader"""
 
-from typing import final
+from typing import final, List
 import struct
 
 import serial
@@ -14,6 +14,7 @@ class LoaderUtilities:
     various types of inbound and outboud data.
     """
 
+    @staticmethod
     def load_records(ser: serial.Serial, filename: str) -> None:
         """Load data from 'filename' in SREC format into the board's memory.
 
@@ -48,6 +49,7 @@ class LoaderUtilities:
 
         print(f'Loaded {total} bytes from {filename}.')
 
+    @staticmethod
     def load_binary(ser: serial.Serial, filename: str) -> None:
         """Load data from 'filename' in WDC's binary format into the board's memory.
 
@@ -89,6 +91,7 @@ class LoaderUtilities:
 
         print(f'Loaded {total} bytes from {filename}.')
 
+    @staticmethod
     def save_binary(address:int, data: bytes, filename: str) -> None:
         """Save binary data to a file in WDC's format
 
@@ -120,6 +123,7 @@ class LoaderUtilities:
         finally:
             file.close()
 
+    @staticmethod
     def save_records(address:int, data: bytes, filename: str) -> None:
         """Save binary data to a file in SREC format
 
@@ -158,3 +162,43 @@ class LoaderUtilities:
                 address = address + count
         finally:
             file.close()
+
+    def print_memory(address:int, data: bytes) -> None:
+        data_len = len(data)
+        offset = 0
+
+        while data_len > 0:
+            str_component: List[str] = []
+
+            # Address
+            str_component.append('%.6X ' % address)
+            str_component.append('| ')
+
+            data_line = data[offset:offset+16]
+            counter = 0
+
+            # Hex representation of data
+            for b in data_line:
+                str_component.append('%.2x ' % b)
+                counter = counter + 1
+            for i in range(counter, 16):
+                str_component.append('.. ')
+
+            str_component.append('| ')
+
+            # ASCII representation of data
+            counter = 0
+            for b in data_line:
+                if b >= 0x20 and b <= 0x7E:
+                    str_component.append('%c' % b)
+                else:
+                    str_component.append('.')
+                counter = counter + 1
+            for i in range(counter, 16):
+                str_component.append('.')
+
+            print(*str_component, sep='', end='\n')
+
+            address = address + 16
+            offset = offset + 16
+            data_len = data_len - 16
