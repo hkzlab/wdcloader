@@ -5,6 +5,7 @@ import struct
 
 import serial
 from serial.tools.list_ports import comports
+from serial.tools.miniterm import Miniterm
 
 from .board_utilities import BoardCommands
 
@@ -125,7 +126,7 @@ class LoaderUtilities:
             file.close()
 
     @staticmethod
-    def save_records(address:int, data: bytes, filename: str) -> None:
+    def save_records(address: int, data: bytes, filename: str) -> None:
         """Save binary data to a file in SREC format
 
         Args:
@@ -218,3 +219,18 @@ class LoaderUtilities:
         print('Available serial ports:')
         for port in port_list:
             print(f'\t{port.device} - {port.description}')
+
+    @staticmethod
+    def open_terminal(ser: serial.Serial) -> None:
+        """Attach an interactive terminal to the port
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+        """ 
+
+        terminal = Miniterm(ser)
+        terminal.set_rx_encoding('ascii')
+        terminal.set_tx_encoding('ascii')
+        terminal.start()
+        terminal.join()
+

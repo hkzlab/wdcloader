@@ -62,9 +62,9 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         required=False)
     mut_group.add_argument('--exec',
                         help='Exec code at <hex_address>',
-                        nargs=1,
+                        nargs='+',
                         type=str,
-                        metavar='<hex_address>',
+                        metavar=('<hex_address>', '[open_terminal]'),
                         required=False)
     mut_group.add_argument('--term',
                         help='Exec terminal',
@@ -134,7 +134,15 @@ if __name__ == '__main__':
                 params = args.exec
                 address = int(params[0], 16)
                 print(f'Executing at address {'0x%.6X' % address} ...')
-                BoardCommands.execute_memory(ser_port, address, board_type)                        
+                BoardCommands.execute_memory(ser_port, address, board_type)
+
+                if len(params) > 1 and params[1]:
+                    print('Opening a serial terminal ...')
+                    LoaderUtilities.open_terminal(ser_port)
+
+            elif args.term:
+                print('Opening a serial terminal ...')
+                LoaderUtilities.open_terminal(ser_port)
 
         finally:
             if ser_port and not ser_port.closed:
