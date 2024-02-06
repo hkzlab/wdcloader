@@ -8,6 +8,7 @@ import serial
 
 from src.loader_utilities import LoaderUtilities
 from src.board_utilities import BoardUtilities, BoardCommands
+from src.board_types import Board_Type
 
 _PROG_NAME: str = 'wdcloader'
 _PROG_VERSION: Tuple[int, int] = (0, 0)
@@ -82,8 +83,6 @@ if __name__ == '__main__':
     if not args.port:
         LoaderUtilities.print_serial_ports()
     else:
-        print(f'{args}')
-
         ser_port: serial.Serial = None
 
         try:
@@ -101,19 +100,22 @@ if __name__ == '__main__':
             info_data = BoardCommands.read_info_data(ser_port)
             board_type = BoardUtilities.detect_board(info_data)
 
-            print(f'Detected board... {board_type.name}')
+            print(f'Board type: {board_type.name}.')
+
+            if board_type == Board_Type.UNKNOWN:
+                raise RuntimeError('Unknown board detected!')
 
             if args.load:
-                print(f'Loading SREC file {args.load}')
+                print(f'Loading SREC file {args.load} ...')
                 LoaderUtilities.load_records(ser_port, args.load)
             elif args.loadbin:
-                print(f'Loading WDC file {args.loadbin}')
+                print(f'Loading WDC file {args.loadbin} ...')
                 LoaderUtilities.load_binary(ser_port, args.loadbin)
             elif args.show:
                 params = args.show
                 address = int(params[0], 16)
                 data_len = int(params[1])
-                print(f'Showing {data_len} bytes at address {'0x%.6X' % address}')
+                print(f'Showing {data_len} bytes at address {'0x%.6X' % address} ...')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
                 LoaderUtilities.print_memory(address, data)
             elif args.save:
@@ -121,7 +123,7 @@ if __name__ == '__main__':
                 address = int(params[0], 16)
                 data_len = int(params[1])
                 filename = params[2]
-                print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in SREC file {filename}')
+                print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in SREC file {filename} ...')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
                 LoaderUtilities.save_records(address, data, filename)
             elif args.savebin:
@@ -129,13 +131,13 @@ if __name__ == '__main__':
                 address = int(params[0], 16)
                 data_len = int(params[1])
                 filename = params[2]
-                print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in BINARY file {filename}')
+                print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in BINARY file {filename} ...')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
                 LoaderUtilities.save_binary(address, data, filename)
             elif args.exec:
                 params = args.exec
                 address = int(params[0], 16)
-                print(f'Executing at address {'0x%.6X' % address}')
+                print(f'Executing at address {'0x%.6X' % address} ...')
                 BoardCommands.execute_memory(ser_port, address, board_type)                        
 
         finally:
