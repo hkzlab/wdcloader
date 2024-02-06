@@ -18,10 +18,12 @@ class BoardUtilities:
     @staticmethod
     def reset_board(ser: serial.Serial) -> None:
         """Resets the board via the DTR signal
-
+        
         Args:
             ser (serial.Serial): Serial port connected to the board
-        """        
+        """    
+
+        # This seems to be ignored, at least for the W65C816SXB    
         ser.setDTR(True)
         sleep(0.3)
         ser.setDTR(False)
