@@ -4,6 +4,7 @@ from typing import final, List
 import struct
 
 import serial
+from serial.tools.list_ports import comports
 
 from .board_utilities import BoardCommands
 
@@ -163,7 +164,14 @@ class LoaderUtilities:
         finally:
             file.close()
 
+    @staticmethod
     def print_memory(address:int, data: bytes) -> None:
+        """Format and print memory as hexadecimal and ASCII values
+
+        Args:
+            address (int): Address at which the memory starts
+            data (bytes): data to print
+        """        
         data_len = len(data)
         offset = 0
 
@@ -202,3 +210,11 @@ class LoaderUtilities:
             address = address + 16
             offset = offset + 16
             data_len = data_len - 16
+
+    @staticmethod
+    def print_serial_ports() -> None:
+        port_list = comports()
+
+        print('Available serial ports:')
+        for port in port_list:
+            print(f'\t{port.device} - {port.description}')

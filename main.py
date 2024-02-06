@@ -7,6 +7,7 @@ from typing import Tuple, List
 import serial
 
 from src.loader_utilities import LoaderUtilities
+from src.board_utilities import BoardUtilities, BoardCommands
 
 _PROG_NAME: str = 'wdcloader'
 _PROG_VERSION: Tuple[int, int] = (0, 0)
@@ -27,41 +28,48 @@ def _build_argsparser() -> argparse.ArgumentParser:
     arg_group.add_argument('-p', '--port',
                         required=True,
                         type=str,
+                        nargs='?',
                         metavar="<serial port>",
                         help='Serial port associated with the board')
-    mut_group = arg_group.add_mutually_exclusive_group(required=True) # Require at least one parameter from these
-
-    mut_group.add_argument('--tload',
+    
+    mut_group = arg_group.add_mutually_exclusive_group()
+    mut_group.add_argument('--load',
                         help='Load an <S19/S28 file>',
                         nargs=1,
                         type=str,
                         metavar='<S19/S28 file>',
                         required=False)
-    mut_group.add_argument('--tshow',
-                        help='Show memory at <address> for <length> bytes',
+    mut_group.add_argument('--show',
+                        help='Show memory at <hex_address> for <length> bytes',
                         nargs=2,
                         type=str,
-                        metavar=('<address>', '<length>'),
+                        metavar=('<hex_address>', '<length>'),
                         required=False)
-    mut_group.add_argument('--tsave',
-                        help='Save memory at <address> for <length> bytes in <S28 file>',
+    mut_group.add_argument('--save',
+                        help='Save memory at <hex_address> for <length> bytes in <S28 file>',
                         nargs=3,
                         type=str,
-                        metavar=('<address>', '<length>', '<S28 file>'),
+                        metavar=('<hex_address>', '<length>', '<S28 file>'),
                         required=False)
-    mut_group.add_argument('--tloadbin',
+    mut_group.add_argument('--savebin',
+                        help='Save memory at <hex_address> for <length> bytes in <WDC file>',
+                        nargs=3,
+                        type=str,
+                        metavar=('<hex_address>', '<length>', '<WDC file>'),
+                        required=False)
+    mut_group.add_argument('--loadbin',
                         help='Load from <WDC file>',
                         nargs=1,
                         type=str,
                         metavar='<WDC file>',
                         required=False)
     mut_group.add_argument('--exec',
-                        help='Exec code at <address>',
+                        help='Exec code at <hex_address>',
                         nargs=1,
                         type=str,
-                        metavar='<address>',
+                        metavar='<hex_address>',
                         required=False)
-    mut_group.add_argument('--tterm',
+    mut_group.add_argument('--term',
                         help='Exec terminal',
                         action='store_true',                 
                         required=False)
@@ -71,19 +79,68 @@ def _build_argsparser() -> argparse.ArgumentParser:
 if __name__ == '__main__':
     args = _build_argsparser().parse_args()
 
-    print(f'{args}')
+    if not args.port:
+        LoaderUtilities.print_serial_ports()
+    else:
+        print(f'{args}')
 
-    ser_port: serial.Serial = None
+        ser_port: serial.Serial = None
 
-    try:
-        ser_port = serial.Serial(port = args.port,
-                                 bytesize = 8,
-                                 stopbits = 1,
-                                 parity = 'N',
-                                 rtscts = True,
-                                 timeout = 1.0)
-    finally:
-        if ser_port and not ser_port.closed:
-            ser_port.close();
+        try:
+            ser_port = serial.Serial(port = args.port,
+                                     bytesize = 8,
+                                     stopbits = 1,
+                                     parity = 'N',
+                                     rtscts = True,
+                                     timeout = 1.0)
+            
+            print('Resetting the board...')
+            BoardUtilities.reset_board(ser_port)
+
+            print('Reading the info block...')
+            info_data = BoardCommands.read_info_data(ser_port)
+            board_type = BoardUtilities.detect_board(info_data)
+
+            print(f'Detected board... {board_type.name}')
+
+            if args.load:
+                print(f'Load SREC file {args.load}')
+                LoaderUtilities.load_records(ser_port, args.load)
+            elif args.loadbin:
+                print(f'Load WDC file {args.loadbin}')
+                LoaderUtilities.load_binary(ser_port, args.loadbin)
+            elif args.show:
+                params = args.show
+                address = int(params[0], 16)
+                data_len = int(params[1])
+                print(f'Show {data_len} bytes at address {'%.6X' % address}')
+                data = BoardCommands.read_memory(ser_port, address, data_len)
+                LoaderUtilities.print_memory(address, data)
+            elif args.save:
+                params = args.save
+                address = int(params[0], 16)
+                data_len = int(params[1])
+                filename = params[2]
+                print(f'Save {data_len} bytes from address {'%.6X' % address} in SREC file {filename}')
+                data = BoardCommands.read_memory(ser_port, address, data_len)
+                LoaderUtilities.save_records(address, data_len, filename)
+            elif args.savebin:
+                params = args.savebin
+                address = int(params[0], 16)
+                data_len = int(params[1])
+                filename = params[2]
+                print(f'Save {data_len} bytes from address {'%.6X' % address} in BINARY file {filename}')
+                data = BoardCommands.read_memory(ser_port, address, data_len)
+                LoaderUtilities.save_binary(address, data_len, filename)
+            elif args.exec:
+                params = args.exec
+                address = int(params[0], 16)
+                print(f'Execute at address {'%.6X' % address}')
+                BoardCommands.execute_memory(ser_port, address, board_type)                        
+
+        finally:
+            if ser_port and not ser_port.closed:
+                ser_port.close()
+
         print('Bye bye!')
 

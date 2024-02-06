@@ -91,8 +91,8 @@ class BoardUtilities:
         Returns:
             Board_Type: Detected board type based on the info data block
         """        
-        if len(info_data) != 28:
-            raise ValueError('The info data block should be exactly 28 bytes!')
+        if len(info_data) != 29:
+            raise ValueError('The info data block should be exactly 29 bytes!')
 
         match info_data[3]:
             case 0x00:
@@ -113,6 +113,20 @@ class BoardUtilities:
 @final
 class BoardCommands:
     """This class contains higher level board commands"""
+
+    @staticmethod
+    def read_info_data(ser: serial.Serial) -> bytes:
+        """Read and return the info block from the board
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+
+        Returns:
+            bytes: The info block, 29 bytes
+        """        
+        BoardUtilities.send_command(ser, Command_Code.GET_INFO)
+        return ser.read(29)
+
 
     @staticmethod
     def read_memory(ser: serial.Serial, address: int, size: int) -> bytes:
