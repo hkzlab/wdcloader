@@ -32,13 +32,56 @@ class BoardUtilities:
         
         ser.write(cmd.value)
 
+    # Info block
+    # Offset:  W65C02  W65C165 W65C816
+    # 00:      00      4d      00
+    # 01:      7E      59      7E
+    # 02:      00      4d      00
+    # 03:      00      43      01          CPU Type
+    # 04:      58      02      58          Board Type
+    # 05:      00      00      00
+    # 06:      7E      02      7E
+    # 07:      00      00      00
+    # 08:      00      00      00
+    # 09:      80      F8      00
+    # 10:      00      00      00
+    # 11:      FA      FA      E4
+    # 12:      7E      02      7E
+    # 13:      00      00      00
+    # 14:      00      00      00
+    # 15:      7F      03      7F
+    # 16:      00      00      00
+    # 17:      FA      FA      E4
+    # 18:      FF      FF      FF
+    # 19:      00      00      00
+    # 20:      00      00      00
+    # 21:      7F      7F      7F
+    # 22:      00      00      00
+    # 23:      FF      FF      FF
+    # 24:      7F      7F      7F
+    # 25:      00      00      00
+    # 26:      FF      90      FF
+    # 27:      FF      7F      FF 
     @staticmethod
     def detect_board(info_data: bytes) -> Board_Type:
         if len(info_data) != 28:
             raise ValueError('The info data block should be exactly 28 bytes!')
 
-        # TODO: Detection
+        match info_data[3]:
+            case 0x00:
+                if info_data[4] == 0x58:
+                    return Board_Type.W65C02SXB
+            case 0x01:
+                if info_data[4] == 0x58:
+                    return Board_Type.W65C816SXB
+            case 0x41 | 0x42 | 0x43:
+                if info_data[0] == 0x4D and info_data[1] == 0x59 and info_data[2] == 0x4D:
+                    return Board_Type.W65C165SXB_A + (info_data[3] - 0x41)
+            case _:
+                return Board_Type.UNKNOWN        
+        
         return Board_Type.UNKNOWN
+
 
 @final
 class BoardCommands:
