@@ -17,7 +17,11 @@ class BoardUtilities:
 
     @staticmethod
     def reset_board(ser: serial.Serial) -> None:
-        """Reset the board"""
+        """Resets the board via the DTR signal
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+        """        
         ser.setDTR(True)
         sleep(0.3)
         ser.setDTR(False)
@@ -27,10 +31,19 @@ class BoardUtilities:
 
     @staticmethod
     def send_command(ser: serial.Serial, cmd: Command_Code) -> None:
+        """Send a command code to the board
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+            cmd (Command_Code): Command code to send
+
+        Raises:
+            RuntimeError: Raised when no response or an incorrect is received from the board
+        """        
         ser.write(b'\x55\xAA')
         data = ser.read(1)
 
-        if not data:
+        if not data or data[0] != 0xCC:
             raise RuntimeError('No response from SXB --- Try to reset the board.')
         
         ser.write(cmd.value)
@@ -67,6 +80,17 @@ class BoardUtilities:
     # 27:      FF      7F      FF 
     @staticmethod
     def detect_board(info_data: bytes) -> Board_Type:
+        """Detect the type of board connected
+
+        Args:
+            info_data (bytes): array of bytes containing the info data block
+
+        Raises:
+            ValueError: Raised when the passed data has the wrong length
+
+        Returns:
+            Board_Type: Detected board type based on the info data block
+        """        
         if len(info_data) != 28:
             raise ValueError('The info data block should be exactly 28 bytes!')
 
@@ -92,14 +116,16 @@ class BoardCommands:
 
     @staticmethod
     def read_memory(ser: serial.Serial, address: int, size: int) -> bytes:
-        """
-        Read 'size' bytes from target 'address' and return them as bytes.
+        """Read 'size' bytes from target 'address' and return them as bytes.
 
-        :param serial.Serial ser: Serial port connected to the board
-        :param int address: address (max 0xFFFFFF) of the memory to read
-        :param int size: number of bytes to read
-        :return: read bytes
-        """
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+            address (int): address (max 0xFFFFFF) of the memory to read
+            size (int): number of bytes to read
+
+        Returns:
+            bytes: byte array containing the read data
+        """        
 
         address = address & 0xFFFFFF # Trucate the address to 3 bytes
         size = size & 0xFFFF # Truncate the size to 2 bytes
@@ -112,13 +138,13 @@ class BoardCommands:
     
     @staticmethod
     def write_memory(ser: serial.Serial, address: int, data: bytes) -> None:
-        """
-        Write the 'data' bytes (max 0xFFFF) directly into SXB's memory at 'address'
+        """Write the 'data' bytes (max 0xFFFF) directly into SXB's memory at 'address'
 
-        :param serial.Serial ser: Serial port connected to the board
-        :param int address: address (max 0xFFFFFF) of the memory to write
-        :param bytes data: data to write
-        """
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+            address (int): Address (max 0xFFFFFF) of the memory to write
+            data (bytes): data to write
+        """        
         
         address = address & 0xFFFFFF # Trucate the address to 3 bytes
         data = data[:(len(data) & 0xFFFF)] # Truncate data size
@@ -130,6 +156,16 @@ class BoardCommands:
 
     @classmethod
     def execute_memory(cls, ser: serial.Serial, address: int, b_type: Board_Type) -> None:
+        """Execute code in memory at 'address'
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+            address (int): Memory address at which to begin execution
+            b_type (Board_Type): Board type
+
+        Raises:
+            ValueError: Raised when the board is of unknown type
+        """        
         match b_type:
             case Board_Type.W65C02SXB | Board_Type.W65C816SXB:
                 address = address & 0xFFFF # Trucate the address to 2 bytes
