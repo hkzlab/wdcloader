@@ -6,6 +6,8 @@ from typing import Tuple, List
 
 import serial
 
+from src.loader_utilities import LoaderUtilities
+
 _PROG_NAME: str = 'wdcloader'
 _PROG_VERSION: Tuple[int, int] = (0, 0)
 

@@ -5,7 +5,7 @@ import struct
 
 import serial
 
-from board_utilities import BoardCommands
+from .board_utilities import BoardCommands
 
 @final
 class LoaderUtilities:
@@ -120,3 +120,34 @@ class LoaderUtilities:
         finally:
             file.close()
 
+    def save_records(address:int, data: bytes, filename: str) -> None:
+        file = open(filename, 'w')
+        try:
+            data_len = len(data)
+            offset = 0
+
+            while data_len:
+                count = 32 if data_len > 32 else data_len
+                check = count + 4
+
+                file.write('S2')
+                file.write('%.2x' % check)
+                file.write('%.6x' % address)
+
+                check = check + address & 0xFF
+                check = check + (address >> 8) & 0xFF
+                check = check + (address >> 16) & 0xFF
+
+                for idx in range(count):
+                    value = data[offset + idx]
+                    file.write('%.2x' % value)
+                    check = check + value
+
+                offset = offset + count
+                check = 0xFF - (check & 0xFF)
+                file.write('%.2x\n' % check)
+
+                data_len = data_len - count
+                address = address + count
+        finally:
+            file.close()
