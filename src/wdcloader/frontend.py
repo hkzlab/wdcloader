@@ -32,6 +32,11 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         help='Disable automatic reset at startup',
                         action='store_true',                 
                         required=False)
+    
+    arg_group.add_argument('--nodetect',
+                        help='Disable automatic board detection at startup',
+                        action='store_true',                 
+                        required=False)
 
     arg_group.add_argument('--show',
                         help='Show memory at <hex_address> for <length> bytes',
@@ -106,14 +111,16 @@ def cli() -> int:
                 print('Resetting the board...')
                 BoardUtilities.reset_board(ser_port)
 
-            print('Reading the info block...')
-            info_data = BoardCommands.read_info_data(ser_port)
-            board_type = BoardUtilities.detect_board(info_data)
+            board_type = Board_Type.UNKNOWN
 
-            print(f'Board type: {board_type.name}.')
+            if not args.nodetect:
+                print('Reading the info block...')
+                info_data = BoardCommands.read_info_data(ser_port)
+                board_type = BoardUtilities.detect_board(info_data)
+                print(f'Board type: {board_type.name}.')
 
-            if board_type == Board_Type.UNKNOWN:
-                raise RuntimeError('Unknown board detected!')
+                if board_type == Board_Type.UNKNOWN:
+                    raise RuntimeError('Unknown board detected!')
 
             if args.load:
                 params = args.load
