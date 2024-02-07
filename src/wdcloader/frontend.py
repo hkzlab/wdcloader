@@ -27,7 +27,12 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         nargs='?',
                         metavar="<serial port>",
                         help='Serial port associated with the board')
-    
+
+    arg_group.add_argument('--noreset',
+                        help='Disable automatic reset at startup',
+                        action='store_true',                 
+                        required=False)
+
     arg_group.add_argument('--show',
                         help='Show memory at <hex_address> for <length> bytes',
                         nargs=2,
@@ -97,8 +102,9 @@ def cli() -> int:
                                      rtscts = True,
                                      timeout = 1.0)
             
-            print('Resetting the board...')
-            BoardUtilities.reset_board(ser_port)
+            if not args.noreset:
+                print('Resetting the board...')
+                BoardUtilities.reset_board(ser_port)
 
             print('Reading the info block...')
             info_data = BoardCommands.read_info_data(ser_port)
