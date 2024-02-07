@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wdcloader"
 version = "0.0.1"
-description = "Loader utility for WDC 65xxx boards"
+description = "Loader utility for WDC 65xxx devboards"
 authors = [
    { name = "Fabio Battaglia", email = "hkzlabnet@gmail.com" }
 ]
-keywords = ["65816", "6502", "wdc", "mcu"]
+keywords = ["65816", "6502", "wdc", "mcu", "devboard"]
 readme = "README.md"
 license = { text = "CC BY-SA 4.0 DEED" }
 classifiers = [
