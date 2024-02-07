@@ -5,20 +5,23 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wdcloader"
 version = "0.0.1"
-authors = [
-    {name = "Fabio Battaglia"},
-]
 description = "Loader utility for WDC 65xxx boards"
+authors = [
+   { name = "Fabio Battaglia", email = "hkzlabnet@gmail.com" }
+]
 keywords = ["65816", "6502", "wdc", "mcu"]
 readme = "README.md"
-requires-python = ">=3.12"
-license = {text = "MIT"}
+license = { text = "CC BY-SA 4.0 DEED" }
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3"
 ]
+requires-python = ">=3.12"
 dependencies = [
     "pyserial ~= 3.5",
 ]
 
 [project.scripts]
 wdcloader = 'wdcloader.frontend:cli'
+
+[project.urls]
+repository = "https://github.com/hkzlab/wdcloader"
