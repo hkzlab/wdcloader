@@ -2,7 +2,7 @@
 
 ## Introduction
 
-wdcloader is a rewrite in Python of the Java [tool](https://github.com/andrew-jacobs/dev65/blob/master/src/com/wdc65xx/sxb/Uploader.java) by Andrew Jacobs. It also adds support to load arbitrary binary data into memory.
+wdcloader is a rewrite in Python of the Java [tool](https://github.com/andrew-jacobs/dev65/blob/master/src/com/wdc65xx/sxb/Uploader.java) by Andrew Jacobs. It also adds support loading arbitrary binary data into memory.
 
 ### Disclaimer
 
@@ -32,3 +32,7 @@ inside the cloned directory.
 * [✅] Can read and write RAM in W65C816SXB
 * [?] Can read and write RAM in W65C165SXB
 * [?] Can execute memory in any board
+
+## Credits
+
+- [Andrew Jacobs](https://github.com/andrew-jacobs) for the original version of this tool
