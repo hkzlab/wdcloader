@@ -28,6 +28,11 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         metavar="<serial port>",
                         help='Serial port associated with the board')
     
+    arg_group.add_argument('--term',
+                        help='Exec terminal after the other commands have executed',
+                        action='store_true',                 
+                        required=False)
+    
     mut_group = arg_group.add_mutually_exclusive_group()
     mut_group.add_argument('--load',
                         help='Load an <S19/S28 file>',
@@ -67,13 +72,9 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         required=False)
     mut_group.add_argument('--exec',
                         help='Exec code at <hex_address>',
-                        nargs='+',
+                        nargs=1,
                         type=str,
-                        metavar=('<hex_address>', '[open_terminal]'),
-                        required=False)
-    mut_group.add_argument('--term',
-                        help='Exec terminal',
-                        action='store_true',                 
+                        metavar='<hex_address>',
                         required=False)
 
     return parser
@@ -153,7 +154,7 @@ def cli() -> int:
                     print('Opening a serial terminal ...')
                     LoaderUtilities.open_terminal(ser_port)
 
-            elif args.term:
+            if args.term:
                 print('Opening a serial terminal ...')
                 LoaderUtilities.open_terminal(ser_port)
 
