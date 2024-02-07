@@ -5,6 +5,9 @@
 wdcloader is a rewrite in Python of the Java [tool](https://github.com/andrew-jacobs/dev65/blob/master/src/com/wdc65xx/sxb/Uploader.java) by Andrew Jacobs. It also adds support loading arbitrary binary data into memory.
 
 
+The original tool supported W65C02SXB, W65C816SXB and W65C165SXB devboards, this tool should support the same hardware, even though I don't currently own a W65C165SXB to test.
+
+
 The rationale is that I need to program these boards somewhere I don't have/don't want a JVM and I also needed a few personalizations on how the tool works.
 
 ### Disclaimer
