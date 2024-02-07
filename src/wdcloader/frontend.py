@@ -28,6 +28,20 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         metavar="<serial port>",
                         help='Serial port associated with the board')
     
+    arg_group.add_argument('--show',
+                        help='Show memory at <hex_address> for <length> bytes',
+                        nargs=2,
+                        type=str,
+                        metavar=('<hex_address>', '<length>'),
+                        required=False)
+
+    arg_group.add_argument('--exec',
+                        help='Exec code at <hex_address>',
+                        nargs=1,
+                        type=str,
+                        metavar='<hex_address>',
+                        required=False)
+
     arg_group.add_argument('--term',
                         help='Exec terminal after the other commands have executed',
                         action='store_true',                 
@@ -39,12 +53,6 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         nargs=1,
                         type=str,
                         metavar='<S19/S28 file>',
-                        required=False)
-    mut_group.add_argument('--show',
-                        help='Show memory at <hex_address> for <length> bytes',
-                        nargs=2,
-                        type=str,
-                        metavar=('<hex_address>', '<length>'),
                         required=False)
     mut_group.add_argument('--save',
                         help='Save memory at <hex_address> for <length> bytes in <S28 file>',
@@ -69,12 +77,6 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         nargs=2,
                         type=str,
                         metavar=('<hex_address>', '<raw file>'),
-                        required=False)
-    mut_group.add_argument('--exec',
-                        help='Exec code at <hex_address>',
-                        nargs=1,
-                        type=str,
-                        metavar='<hex_address>',
                         required=False)
 
     return parser
@@ -121,13 +123,6 @@ def cli() -> int:
                 filename = params[1]
                 print(f'Loading raw file {filename} at address {'0x%.6X' % address} ...')
                 LoaderUtilities.load_raw_binary(ser_port, address, filename)
-            elif args.show:
-                params = args.show
-                address = int(params[0], 16)
-                data_len = int(params[1])
-                print(f'Showing {data_len} bytes at address {'0x%.6X' % address} ...')
-                data = BoardCommands.read_memory(ser_port, address, data_len)
-                LoaderUtilities.print_memory(address, data)
             elif args.save:
                 params = args.save
                 address = int(params[0], 16)
@@ -144,7 +139,16 @@ def cli() -> int:
                 print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in BINARY file {filename} ...')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
                 LoaderUtilities.save_binary(address, data, filename)
-            elif args.exec:
+
+            if args.show:
+                params = args.show
+                address = int(params[0], 16)
+                data_len = int(params[1])
+                print(f'Showing {data_len} bytes at address {'0x%.6X' % address} ...')
+                data = BoardCommands.read_memory(ser_port, address, data_len)
+                LoaderUtilities.print_memory(address, data)
+
+            if args.exec:
                 params = args.exec
                 address = int(params[0], 16)
                 print(f'Executing at address {'0x%.6X' % address} ...')
