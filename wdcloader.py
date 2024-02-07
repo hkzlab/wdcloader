@@ -1,6 +1,8 @@
 """Main module"""
 
 import argparse
+import sys
+import traceback
 from typing import Tuple, List
 
 import serial
@@ -10,7 +12,7 @@ from src.board_utilities import BoardUtilities, BoardCommands
 from src.board_types import Board_Type
 
 _PROG_NAME: str = 'wdcloader'
-_PROG_VERSION: Tuple[int, int] = (0, 0)
+_PROG_VERSION: Tuple[int, int] = (0, 1)
 
 def _build_argsparser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
@@ -20,6 +22,7 @@ def _build_argsparser() -> argparse.ArgumentParser:
     
    
     parser.add_argument('--version', action='version', version=f'%(prog)s {_PROG_VERSION[0]}.{_PROG_VERSION[1]}')
+    parser.add_argument('-v', '--verbose', action='count', default=0)
 
     arg_group = parser.add_argument_group()
     arg_group.add_argument('-p', '--port',
@@ -79,7 +82,7 @@ def _build_argsparser() -> argparse.ArgumentParser:
 
     return parser
 
-if __name__ == '__main__':
+def cli() -> int:
     args = _build_argsparser().parse_args()
 
     if not args.port:
@@ -158,9 +161,19 @@ if __name__ == '__main__':
                 print('Opening a serial terminal ...')
                 LoaderUtilities.open_terminal(ser_port)
 
+        except Exception as ex:
+            if args.verbose:
+                print(traceback.format_exc())
+            else:
+                print(ex)
+            return -1
+
         finally:
             if ser_port and not ser_port.closed:
                 ser_port.close()
 
         print('Bye bye!')
+        return 1 
 
+if __name__ == '__main__':
+    sys.exit(cli())
