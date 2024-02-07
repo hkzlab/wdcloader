@@ -108,13 +108,13 @@ def cli() -> int:
                                      timeout = 1.0)
             
             if not args.noreset:
-                print('Resetting the board...')
+                print('Resetting the board ...')
                 BoardUtilities.reset_board(ser_port)
 
             board_type = Board_Type.UNKNOWN
 
             if not args.nodetect:
-                print('Reading the info block...')
+                print('Reading the info block ...')
                 info_data = BoardCommands.read_info_data(ser_port)
                 board_type = BoardUtilities.detect_board(info_data)
                 print(f'Board type: {board_type.name}.')
