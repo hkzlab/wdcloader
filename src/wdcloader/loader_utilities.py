@@ -7,7 +7,7 @@ import serial
 from serial.tools.list_ports import comports
 from serial.tools.miniterm import Miniterm
 
-from .board_utilities import BoardCommands
+from wdcloader.board_utilities import BoardCommands
 
 @final
 class LoaderUtilities:

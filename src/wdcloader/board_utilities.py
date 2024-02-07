@@ -3,8 +3,8 @@
 from time import sleep
 from typing import final
 
-from .command_codes import Command_Code
-from .board_types import Board_Type
+from wdcloader.command_codes import Command_Code
+from wdcloader.board_types import Board_Type
 
 import serial
 

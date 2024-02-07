@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wdcloader"
+version = "0.0.1"
+authors = [
+    {name = "Fabio Battaglia"},
+]
+description = "Loader utility for WDC 65xxx boards"
+keywords = ["65816", "6502", "wdc", "mcu"]
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "pyserial ~= 3.5",
+]
+
+[project.scripts]
+wdcloader = 'wdcloader.frontend:cli'

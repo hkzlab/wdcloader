@@ -1,27 +1,23 @@
-"""Main module"""
+"""Frontend module"""
 
 import argparse
-import sys
 import traceback
-from typing import Tuple, List
 
 import serial
 
-from src.loader_utilities import LoaderUtilities
-from src.board_utilities import BoardUtilities, BoardCommands
-from src.board_types import Board_Type
-
-_PROG_NAME: str = 'wdcloader'
-_PROG_VERSION: Tuple[int, int] = (0, 1)
+from wdcloader import __name__, __version__
+from wdcloader.loader_utilities import LoaderUtilities
+from wdcloader.board_utilities import BoardUtilities, BoardCommands
+from wdcloader.board_types import Board_Type
 
 def _build_argsparser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        prog=_PROG_NAME,
+        prog=__name__,
         description='A tool for uploading and executing programs on an SXB or MMC board.'
     )
     
    
-    parser.add_argument('--version', action='version', version=f'%(prog)s {_PROG_VERSION[0]}.{_PROG_VERSION[1]}')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     parser.add_argument('-v', '--verbose', action='count', default=0)
 
     arg_group = parser.add_argument_group()
@@ -174,6 +170,3 @@ def cli() -> int:
 
         print('Bye bye!')
         return 1 
-
-if __name__ == '__main__':
-    sys.exit(cli())
