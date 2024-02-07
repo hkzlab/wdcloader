@@ -36,3 +36,7 @@ inside the cloned directory.
 ## Credits
 
 - [Andrew Jacobs](https://github.com/andrew-jacobs) for the original version of this tool
+
+## Licence
+
+I honor the licence used by the original project this is derived from: [CC BY-SA 4.0 DEED](https://creativecommons.org/licenses/by-sa/4.0/)
