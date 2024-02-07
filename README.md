@@ -1,4 +1,4 @@
-# wdcloader - Loader utility for WDC 65xxx devboards
+# wdcloader - Loader utility for WDC 65Cxxx devboards
 
 ## Introduction
 

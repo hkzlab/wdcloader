@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wdcloader"
 version = "0.0.1"
-description = "Loader utility for WDC 65xxx devboards"
+description = "Loader utility for WDC 65Cxxx devboards"
 authors = [
    { name = "Fabio Battaglia", email = "hkzlabnet@gmail.com" }
 ]
