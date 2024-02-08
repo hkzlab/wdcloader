@@ -42,6 +42,7 @@ inside the cloned directory.
 ## Credits
 
 - [Andrew Jacobs](https://github.com/andrew-jacobs) for the original version of this tool
+- [William D. Jones](https://github.com/cr1901/W65C02SXB) for a similar utility in Rust
 
 ## Licence
 

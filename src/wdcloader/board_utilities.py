@@ -187,18 +187,18 @@ class BoardCommands:
                 address = address & 0xFFFF # Trucate the address to 2 bytes
                 data = [0] * 16
                 # Register A is in -> data[0], data[1]
-                # Register B is in -> data[2], data[3]
-                # Register C is in -> data[4], data[5]
+                # Register X is in -> data[2], data[3]
+                # Register Y is in -> data[4], data[5]
                 addr_b = address.to_bytes(length=2, byteorder='little', signed=False)
                 data[6] = addr_b[0] # Set the PC
                 data[7] = addr_b[1]
 
                 # DP seems (?) to be in data[8], data[9]
                 data[10] = 0xFF # SP
-                data[11] = 0x00
+                data[11] = 0x01
 
-                data[12] = 0x34 # P
-                data[13] = 0x01
+                data[12] = 0x34 # P (Status Register)
+                data[13] = 0x01 # CPU Mode ? (0 -> 65816, 1 -> 6502)
 
                 # PBR seems (?) to be in data[14]
                 # DBR seems (?) to be in data[15]
