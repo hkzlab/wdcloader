@@ -37,6 +37,11 @@ def _build_argsparser() -> argparse.ArgumentParser:
                         help='Disable automatic board detection at startup',
                         action='store_true',                 
                         required=False)
+    
+    arg_group.add_argument('--state',
+                        help='Retrieve and print CPU state',
+                        action='store_true',                 
+                        required=False)
 
     arg_group.add_argument('--show',
                         help='Show memory at <hex_address> for <length> bytes',
@@ -152,6 +157,10 @@ def cli() -> int:
                 print(f'Saving {data_len} bytes from address {'0x%.6X' % address} in BINARY file {filename} ...')
                 data = BoardCommands.read_memory(ser_port, address, data_len)
                 LoaderUtilities.save_binary(address, data, filename)
+
+            if args.state:
+                print('Retrieving CPU state ...')
+                LoaderUtilities.print_state(ser_port, board_type)
 
             if args.show:
                 params = args.show

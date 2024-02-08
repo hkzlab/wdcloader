@@ -8,6 +8,7 @@ from serial.tools.list_ports import comports
 from serial.tools.miniterm import Miniterm
 
 from wdcloader.board_utilities import BoardCommands
+from wdcloader.board_types import Board_Type
 
 @final
 class LoaderUtilities:
@@ -199,6 +200,46 @@ class LoaderUtilities:
             file.close()
 
     @staticmethod
+    def print_state(ser: serial.Serial, b_type: Board_Type) -> None:
+        """Read and print the CPU state
+
+        Args:
+            ser (serial.Serial): Serial port connected to the board
+            b_type (Board_Type): Detected board type
+
+        Raises:
+            IOError: Raised when an incorrect number of bytes is read
+        """        
+        state_fmt = '<HHHHHHBBBB'
+        state_size = struct.calcsize(state_fmt)
+        state_unpack = struct.Struct(state_fmt).unpack_from
+
+        state_data = BoardCommands.read_state(ser, b_type)
+
+        if len(state_data) != state_size:
+            raise IOError(f'Somehow we read {len(state_data)} instead of the correct {state_size} state bytes')
+        
+        # Unpack the response.
+        # Note that the position of the registers are taken from Andrew Jacob's code
+        # and I'm not really sure they're correct
+        r_A, r_X, r_Y, r_PC, r_DP, r_SP, r_P, cpu_mode, r_PBR, r_DBR = state_unpack(state_data)
+
+        str_component: List[str] = []
+        str_component.append(f'A   ->\t{'%.4X' % r_A}')
+        str_component.append(f'X   ->\t{'%.4X' % r_X}')
+        str_component.append(f'Y   ->\t{'%.4X' % r_Y}')
+        str_component.append(f'PC  ->\t{'%.4X' % r_PC}')
+        str_component.append(f'DP  ->\t{'%.4X' % r_DP}')
+        str_component.append(f'SP  ->\t{'%.4X' % r_SP}')
+        str_component.append(f'P   ->\t{'%.2X' % r_P}')
+        str_component.append(f'CPU ->\t{'%.2X' % cpu_mode}')
+        str_component.append(f'PBR ->\t{'%.2X' % r_PBR}')
+        str_component.append(f'DBR ->\t{'%.2X' % r_DBR}')
+
+        print(*str_component, sep='\n', end='\n\n')
+
+
+    @staticmethod
     def print_memory(address:int, data: bytes) -> None:
         """Format and print memory as hexadecimal and ASCII values
 
@@ -244,6 +285,7 @@ class LoaderUtilities:
             address = address + 16
             offset = offset + 16
             data_len = data_len - 16
+        print('')
 
     @staticmethod
     def print_serial_ports() -> None:
