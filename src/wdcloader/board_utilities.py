@@ -106,7 +106,7 @@ class BoardUtilities:
                     return Board_Type.W65C816SXB
             case 0x41 | 0x42 | 0x43:
                 if info_data[0] == 0x4D and info_data[1] == 0x59 and info_data[2] == 0x4D:
-                    return Board_Type.MyMENSCH_RevA + (info_data[3] - 0x41)
+                    return Board_Type(Board_Type.MyMENSCH_RevA.value + (info_data[3] - 0x41))
             case _:
                 return Board_Type.UNKNOWN        
         

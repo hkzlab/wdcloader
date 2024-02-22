@@ -101,8 +101,10 @@ def cli() -> int:
 
     if not args.port:
         LoaderUtilities.print_serial_ports()
+        
+        return 1
     else:
-        ser_port: serial.Serial = None
+        ser_port: serial.Serial
 
         try:
             ser_port = serial.Serial(port = args.port,
