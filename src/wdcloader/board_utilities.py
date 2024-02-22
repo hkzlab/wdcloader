@@ -25,11 +25,11 @@ class BoardUtilities:
             ser (serial.Serial): Serial port connected to the board
         """    
 
-        ser.setDTR(True)
+        ser.dtr = True
         sleep(0.3)
-        ser.setDTR(False)
+        ser.dtr = False
         sleep(0.3)
-        ser.setDTR(True)
+        ser.dtr = True
         sleep(0.3)
 
     @staticmethod
