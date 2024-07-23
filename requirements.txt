@@ -1,2 +1,2 @@
 pyserial==3.5
-setuptools==69.0.3
+setuptools==71.1.0
